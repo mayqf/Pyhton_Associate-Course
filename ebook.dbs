@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="Sqlite" id="Project_39be3bf" template="Default" database="Sqlite" >
+	<schema name="Default" schemaname="Default" >
+		<table name="CUSTOMER" >
+			<column name="Customer ID" type="integer" jt="4" />
+			<column name="Customer Name" type="text" jt="-1" />
+			<column name="Adress" type="text" jt="-1" />
+			<column name="E-mail" type="text" jt="-1" />
+			<column name="Phone Number" type="integer" jt="4" />
+			<index name="pk_CUSTOMER" unique="UNIQUE" >
+				<column name="Customer ID" />
+			</index>
+			<fk name="Fk_CUSTOMER" to_schema="Default" to_table="ORDER" >
+				<fk_column name="Customer ID" pk="Customer ID" />
+			</fk>
+			<fk name="Fk_CUSTOMER_0" to_schema="Default" to_table="PRODUCT" >
+				<fk_column name="Customer ID" pk="Customer ID" />
+			</fk>
+			<fk name="Fk_CUSTOMER_1" to_schema="Default" to_table="INVOICE" >
+				<fk_column name="Customer ID" pk="Customer ID" />
+			</fk>
+			<fk name="Fk_CUSTOMER_2" to_schema="Default" to_table="SHIPPING" >
+				<fk_column name="Customer ID" pk="Customer ID" />
+			</fk>
+		</table>
+		<table name="INVOICE" >
+			<column name="Invoice ID" type="integer" jt="4" />
+			<column name="Product ID" type="integer" jt="4" />
+			<column name="Order ID" type="integer" jt="4" />
+			<column name="Customer ID" type="integer" jt="4" />
+			<column name="Shipping Cost" type="text" jt="-1" />
+			<column name="Item Cost" type="integer" jt="4" />
+			<index name="pk_INVOICE" unique="UNIQUE" >
+				<column name="Invoice ID" />
+				<column name="Product ID" />
+				<column name="Order ID" />
+				<column name="Customer ID" />
+			</index>
+			<index name="Unq_INVOICE_Customer ID" unique="UNIQUE" >
+				<column name="Customer ID" />
+			</index>
+			<index name="Unq_INVOICE_Order ID" unique="UNIQUE" >
+				<column name="Order ID" />
+			</index>
+			<index name="Unq_INVOICE_Product ID" unique="UNIQUE" >
+				<column name="Product ID" />
+			</index>
+			<index name="Unq_INVOICE_Shipping Cost" unique="UNIQUE" >
+				<column name="Shipping Cost" />
+			</index>
+		</table>
+		<table name="ORDER" >
+			<column name="Order ID" type="integer" jt="4" />
+			<column name="Customer ID" type="integer" jt="4" />
+			<column name="Product ID" type="integer" jt="4" />
+			<column name="Payment Method" type="text" jt="-1" />
+			<column name="Order Date" type="integer" jt="4" />
+			<index name="pk_ORDER" unique="UNIQUE" >
+				<column name="Order ID" />
+				<column name="Customer ID" />
+				<column name="Product ID" />
+			</index>
+			<index name="Unq_ORDER_Customer ID" unique="UNIQUE" >
+				<column name="Customer ID" />
+			</index>
+			<fk name="Fk_ORDER" to_schema="Default" to_table="INVOICE" >
+				<fk_column name="Order ID" pk="Order ID" />
+			</fk>
+			<fk name="Fk_ORDER_0" to_schema="Default" to_table="SHIPPING" >
+				<fk_column name="Order ID" pk="Order ID" />
+			</fk>
+			<fk name="Fk_ORDER_1" to_schema="Default" to_table="INVOICE" >
+				<fk_column name="Product ID" pk="Product ID" />
+			</fk>
+			<fk name="Fk_ORDER_2" to_schema="Default" to_table="PRODUCT" >
+				<fk_column name="Product ID" pk="Product ID" />
+			</fk>
+		</table>
+		<table name="PRODUCT" >
+			<column name="Product ID" type="integer" jt="4" />
+			<column name="Customer ID" type="integer" jt="4" />
+			<column name="Amount of Product" type="integer" jt="4" />
+			<column name="Amount of Product in Stock" type="integer" jt="4" />
+			<column name="Cost of Product" type="integer" jt="4" />
+			<index name="pk_PRODUCT" unique="UNIQUE" >
+				<column name="Product ID" />
+				<column name="Customer ID" />
+			</index>
+			<index name="Unq_PRODUCT_Customer ID" unique="UNIQUE" >
+				<column name="Customer ID" />
+			</index>
+			<index name="Unq_PRODUCT_Product ID" unique="UNIQUE" >
+				<column name="Product ID" />
+			</index>
+		</table>
+		<table name="SHIPPING" >
+			<column name="Shipping ID" type="integer" jt="4" />
+			<column name="Customer ID" type="integer" jt="4" />
+			<column name="Order ID" type="integer" jt="4" />
+			<column name="Delivery Date" type="text" jt="-1" />
+			<column name="Shipping Date" type="text" jt="-1" />
+			<column name="Shipping Cost" type="text" jt="-1" />
+			<index name="pk_SHIPPING" unique="UNIQUE" >
+				<column name="Shipping ID" />
+				<column name="Customer ID" />
+				<column name="Order ID" />
+				<column name="Delivery Date" />
+			</index>
+			<index name="Unq_SHIPPING_Customer ID" unique="UNIQUE" >
+				<column name="Customer ID" />
+			</index>
+			<index name="Unq_SHIPPING_Order ID" unique="UNIQUE" >
+				<column name="Order ID" />
+			</index>
+			<fk name="Fk_SHIPPING" to_schema="Default" to_table="INVOICE" >
+				<fk_column name="Shipping Cost" pk="Shipping Cost" />
+			</fk>
+		</table>
+	</schema>
+	<connector name="Manage..." database="Sqlite" driver_class="org.sqlite.JDBC" driver_jar="sqlite-jdbc-3.27.2.1.jar" driver_desc="Standard" host="localhost" port="7210" instance="C:/Users/Mutlu/Desktop/bookOrder.db" />
+	<connector name="Sqlite" database="Sqlite" driver_class="org.sqlite.JDBC" driver_jar="sqlite-jdbc-3.27.2.1.jar" driver_desc="Standard" host="localhost" port="7210" instance="C:/phyton/calismasql.db" />
+	<layout name="Default Layout" id="Layout_1ec2f00" confirmed="y" show_relation="columns" >
+		<entity schema="Default" name="PRODUCT" color="3986C1" x="112" y="272" />
+		<entity schema="Default" name="CUSTOMER" color="3986C1" x="48" y="64" />
+		<entity schema="Default" name="INVOICE" color="3986C1" x="416" y="224" />
+		<entity schema="Default" name="ORDER" color="3986C1" x="432" y="48" />
+		<entity schema="Default" name="SHIPPING" color="3986C1" x="288" y="416" />
+	</layout>
+</project>
