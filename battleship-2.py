@@ -1,87 +1,336 @@
-from random import randint
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat May 30 16:42:12 2020
 
-board = []
-sayac = 0
-puan = 250
-for i in range(10):
-    board.append(["0"]*10)
+@author: hackyourfuture
+"""
+print("""
+        #######################################################
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+        #            PYHTON v.3.7.2                           #
+        #            Developer: Mustafa Aydar                 #
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+        #######################################################
+                        
+                        
+                 Welcome to Battleship game!!!\n 
 
-def print_board(board):
-    for satir in board:
-        print (" ".join(satir))
-def rand(board):
-    return randint(1,len(board)-1)
+Firstly you will place your ships to board. Computer makes this randomly.
+You should place your ships at columns&rows between 1-10.
+After adding ships to board you will start.
+                             
+""") 
 
-print("-" * 35)
-print("Amiral battı oyununa hoş geldiniz")
-print("-" * 35)
-print("Puanınız:", puan)
-print("-" * 35)
-print_board(board)
+import copy, random
 
-gemi_satir = rand(board)
-gemi_sutun = rand(board)
-gemi1_satir = rand(board)
-gemi1_sutun = rand(board)
-gemi2_satir = rand(board)
-gemi2_sutun = rand(board)
+dosya = open("battleship.txt", "w")
+
+def print_board(s,board):
+
+	player = "Computer"
+    
+	if s == "u":
+		player = "User"
+        
+	print ("\nThe " + player + "'s board look like this: \n")
+
+	#print the horizontal numbers
+	
+	for i in range(10):
+		print ("  " + str(i+1),end=" ")
+	print ("\n")
+
+	for i in range(10):
+	
+		#print the vertical line number
+		if i != 9: 
+			print (str(i+1) + "  ",end="")
+		else:
+			print (str(i+1) + " ",end="")
+
+		#print the board values, and cell dividers
+		for j in range(10):
+			if board[i][j] == -1:
+				print (' ',end="")	
+			elif s == "u":
+				print (board[i][j],end="")
+			elif s == "c":
+				if board[i][j] == "*" or board[i][j] == "$":
+					print (board[i][j],end="")
+				else:
+					print (" ",end="")
+			
+			if j != 9:
+				print (" # ",end="")
+		
+		else: 
+			print() 
+
+def user_place_ships(board,ships):
+
+	for ship in ships.keys():
+
+		#get coordinates from user and vlidate the position
+		valid = False
+		while(not valid):
+
+			print_board("u",board)
+			print ("\nPlacing a/an " + ship)
+			x,y = get_coord()
+			ori = v_or_h()
+			valid = validate(board,ships[ship],x,y,ori)
+			if not valid:
+				print ("Cannot place a ship here.\nPlease take a look at the board and try again.")
+				input("Press ENTER to continue!")
+
+		#place the ship
+		board = place_ship(board,ships[ship],ship[0],ori,x,y)
+		print_board("u",board)
+		
+	input("Placing user ships is done. Press ENTER to continue!")
+	return board
 
 
-while True:
-    if(gemi_satir == gemi1_satir and gemi_sutun == gemi1_sutun):
-        gemi1_satir = rand(board)
-        gemi1_sutun = rand(board)
-        continue
-    elif (gemi_satir == gemi2_satir and gemi_sutun == gemi2_sutun):
-        gemi2_satir = rand(board)
-        gemi2_sutun = rand(board)
-        continue
-    elif (gemi1_satir == gemi2_satir and gemi1_sutun == gemi2_sutun):
-        gemi2_satir = rand(board)
-        gemi2_sutun = rand(board)
-        continue
-    else:
-        print("-" * 35)
-        tahmin_satir = int(input("Satır giriniz: "))
-        tahmin_sutun = int(input("Sütun giriniz: "))
+def computer_place_ships(board,ships):
 
-        if (tahmin_satir == gemi_satir and tahmin_sutun == gemi_sutun)\
-                   or (tahmin_satir == gemi1_satir and tahmin_sutun == gemi1_sutun) \
-                    or (tahmin_satir == gemi2_satir and tahmin_sutun == gemi2_sutun):
-            if board[tahmin_satir - 1][tahmin_sutun - 1] == "/":
-                    print("-" * 35)
-                    print("Zaten tahmin ettiniz")
-                    print_board(board)
-                    print(puan)
-            else:
-                    print("-" * 35)
-                    print("Tebrikler gemiyi batırdınız!")
-                    board[tahmin_satir - 1][tahmin_sutun - 1] = "/"
-                    print("Puanınız:",puan)
-                    print("-" * 35)
-                    print_board(board)
-                    sayac += 1
-        else:
-            if (tahmin_satir < 0 or tahmin_sutun < 0) or (tahmin_satir >10 or tahmin_sutun >10):
-                    print("-" * 35)
-                    print("Alan sınırları dışında değer girdiniz")
+	for ship in ships.keys():
+	
+		#genreate random coordinates and vlidate the postion
+		valid = False
+		while(not valid):
 
-            elif board[tahmin_satir - 1][tahmin_sutun - 1] == "X":
-                    print("-" * 35)
-                    print("Zaten tahmin ettiniz")
-                    print("-" * 35)
-                    print_board(board)
-            else:
-                    print("-" * 35)
-                    print("Vuramadınız")
-                    board[tahmin_satir - 1][tahmin_sutun - 1] = "X"
-                    puan -= 10
-                    print("Puanınız:", puan)
-                    print("-" * 35)
-                    print_board(board)
+			x = random.randint(1,10)-1
+			y = random.randint(1,10)-1
+			o = random.randint(0,1)
+			if o == 0: 
+				ori = "v"
+			else:
+				ori = "h"
+			valid = validate(board,ships[ship],x,y,ori)
 
-        if sayac == 3:
-             print("-" * 35)
-             print("Tebrikler bütün gemileri batırdınız ve oyunu kazandınız")
-             print("-" * 35)
-             break
+		#place the ship
+		print ("Computer placing a/an " + ship)
+		board = place_ship(board,ships[ship],ship[0],ori,x,y)
+	
+	return board
+
+
+def place_ship(board,ship,s,ori,x,y):
+
+	#place ship based on orientation
+	if ori == "v":
+		for i in range(ship):
+			board[x+i][y] = s
+	elif ori == "h":
+		for i in range(ship):
+			board[x][y+i] = s
+
+	return board
+	
+def validate(board,ship,x,y,ori):
+
+	#validate the ship can be placed at given coordinates
+	if ori == "v" and x+ship > 10:
+		return False
+	elif ori == "h" and y+ship > 10:
+		return False
+	else:
+		if ori == "v":
+			for i in range(ship):
+				if board[x+i][y] != -1:
+					return False
+		elif ori == "h":
+			for i in range(ship):
+				if board[x][y+i] != -1:
+					return False
+		
+	return True
+
+def v_or_h():
+
+	#get ship orientation from user
+	while(True):
+		user_input = input("vertical or horizontal (v,h) ? ")
+		if user_input == "v" or user_input == "h":
+			return user_input
+		else:
+			print ("Invalid input. Please only enter v or h")
+
+def get_coord():
+	
+	while (True):
+		user_input = input("Please enter coordinates (row,col(first row-then ,-then column)) : ")
+		dosya.write(user_input)
+		
+		try:
+			#see that user entered 2 values seprated by comma
+			coor = user_input.split(",")
+			if len(coor) != 2:
+				raise Exception("Invalid entry, too few/many coordinates.");
+
+			#check that 2 values are integers
+			coor[0] = int(coor[0])-1
+			coor[1] = int(coor[1])-1
+
+			#check that values of integers are between 1 and 10 for both coordinates
+			if coor[0] > 9 or coor[0] < 0 or coor[1] > 9 or coor[1] < 0:
+				raise Exception("Invalid entry. Please use values between 1 to 10 only.")
+
+			#if everything is ok, return coordinates
+			
+			return coor
+                        
+		
+		except ValueError:
+			print ("Invalid entry. Please enter only numeric values for coordinates")
+		except Exception as e:
+			print (e)
+
+def make_move(board,x,y):
+	
+	#make a move on the board and return the result, hit, miss or try again for repeat hit
+	if board[x][y] == -1:
+		return "miss"
+	elif board[x][y] == '*' or board[x][y] == '$':
+		return "try again"
+	else:
+		return "hit"
+
+def user_move(board):
+	
+	#get coordinates from the user and try to make move
+	#if move is a hit, check ship sunk and win condition
+	while(True):
+		x,y = get_coord()
+		res = make_move(board,x,y)
+		if res == "hit":
+			print ("Hit at " + str(x+1) + "," + str(y+1))
+			check_sink(board,x,y)
+			board[x][y] = '$'
+			if check_win(board):
+				return "WIN"
+		elif res == "miss":
+			print ("Sorry, " + str(x+1) + "," + str(y+1) + " is a miss.")
+			board[x][y] = "*"
+		elif res == "try again":
+			print ("Sorry, that coordinate was already hit. Please try again")	
+
+		if res != "try again":
+			return board
+
+def computer_move(board):
+	
+	#generate user coordinates from the user and try to make move
+	#if move is a hit, check ship sunk and win condition
+	while(True):
+		x = random.randint(1,10)-1
+		y = random.randint(1,10)-1
+		res = make_move(board,x,y)
+		if res == "hit":
+			print ("Hit at " + str(x+1) + "," + str(y+1))
+			check_sink(board,x,y)
+			board[x][y] = '$'
+			if check_win(board):
+				return "WIN"
+		elif res == "miss":
+			print ("Sorry, " + str(x+1) + "," + str(y+1) + " is a miss.")
+			board[x][y] = "*"
+
+		if res != "try again":
+			
+			return board
+	
+def check_sink(board,x,y):
+
+	#figure out what ship was hit
+	if board[x][y] == "A":
+		ship = "Aircraft Carrier(5 length)"
+	elif board[x][y] == "B":
+		ship = "Battleship(4 length))"
+	elif board[x][y] == "S":
+		ship = "Submarine(3 length))" 
+	elif board[x][y] == "D":
+		ship = "Destroyer(3 length))"
+	elif board[x][y] == "P": 
+		ship = "Patrol Boat(2 length))"
+	
+	#mark cell as hit and check if sunk
+	board[-1][ship] -= 1
+	if board[-1][ship] == 0:
+		print (ship + " Sunk")
+		
+
+def check_win(board):
+
+      for i in range(10):
+            for j in range(10):
+                  if board[-1]["Aircraft Carrier(5 length))"] == 0:
+                        print("Aircraft Carrier(5 length)) Sunk")
+                        return True
+                  if board[i][j] != -1 and board[i][j] != '*' and board[i][j] != '$':
+                        return False
+	
+
+def main():
+
+	#types of ships
+	ships = {"Aircraft Carrier(5 length))":5,
+		     "Battleship(4 length))":4,
+ 		     "Submarine(3 length))":3,
+		     "Destroyer(3 length))":3,
+		     "Patrol Boat(2 length))":2}
+
+	#setup blank 10x10 board
+	board = []
+	for i in range(10):
+		board_row = []
+		for j in range(10):
+			board_row.append(-1)
+		board.append(board_row)
+
+	#setup user and computer boards
+	user_board = copy.deepcopy(board)
+	comp_board = copy.deepcopy(board)
+
+	#add ships as last element in the array
+	user_board.append(copy.deepcopy(ships))
+	comp_board.append(copy.deepcopy(ships))
+
+	#ship placement
+	user_board = user_place_ships(user_board,ships)
+	comp_board = computer_place_ships(comp_board,ships)
+
+	#game main loop
+	while(1):
+                
+		#user move
+		print_board("c",comp_board)
+		comp_board = user_move(comp_board)
+
+		#check if user won
+		if comp_board == "WIN":
+			print ("User WON! :)")
+			quit()
+			
+		#display current computer board
+		print_board("c",comp_board)
+		input("To end user turn press ENTER")
+		#computer move
+		user_board = computer_move(user_board)
+		
+		#check if computer move
+		if user_board == "WIN":
+			print ("Computer WON! :(")
+			quit()
+			
+		#display user board
+		print_board("u",user_board)
+		input("To end computer turn press ENTER")
+		get_coord()
+
+
+	
+if __name__=="__main__":
+	main()
+dosya.close()
